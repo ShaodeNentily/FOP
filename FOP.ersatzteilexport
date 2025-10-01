@@ -1,0 +1,148 @@
+..¿ Name      : Esatzteillisten Export JSON
+..¿
+..¿ Version   : 1.0                
+..¿ Autor     : ML                                  Datum : 26.09.25
+..¿
+..¿ Funktion  : Export von inhalten der Ersatzteiliste in eine JSON
+..¿     
+..¿     
+..¿ Änderung  : 
+..¿
+..¿
+..»****************************************************************************
+.type text xtNote xtFile xtPath xtFileName xtFragezeichen
+.type GD8 xdDate
+..
+.continue ERR01         ? G|evtkommd <> G|kaktname12
+..
+.continue HINW1
+..
+.formula U|xdDate = G|datum
+..
+.formula U|xtFragezeichen = "?"
+..
+.formula U|xtPath = "win/export/"
+.formula U|xtFileName = U|xdDate + " - " + M|nummer + " - " + M|such + ".json"
+.formula U|xtFileName = 'F|regreplaceall(U|xtFileName, "[\/\\]+", "_")'
+
+.input DATEI.F
+.file -tempname U|xtFile
+..
+.output new 'U|xtFile' -encoding "UTF-8"
+
+.println {
+.println    "sparepartIdentification":  [
+.println                                    {
+.println                                        "Ersatzteil":  "WAHR"
+.println                                    }
+.println                                ],
+.println    "idProperty":  "Artikelnummer",
+.println    "orderItemProperty":  "Artikelnummer",
+.println    "displayNameProperty":  "Beschreibung",
+.println    "showSparePartsMode":  2,
+.println    "displayPropertiesSpareParts":  [
+.println                                        "Beschreibung",
+.println                                        "Beschreibung 2",
+.println                                        "Artikelnummer"
+.println                                    ],
+.println    "displayPropertiesNonSpareParts":  [
+.println                                           "Artikelnummer"
+.println                                       ],
+.println    "viewDefaults":  {
+.println                         "worldUpVector":  [
+.println                                               0,
+.println                                               1,
+.println                                               0
+.println                                           ],
+.println                         "viewCubeHome":  "top left front"
+.println                     },
+.println    "disabledExtensions":  [
+.println                               "Autodesk.Measure",
+.println                               "Autodesk.Section",
+.println                               "Autodesk.Hyperlink",
+.println                               "Autodesk.Viewing.ScalarisSimulation"
+.println                           ],
+.println    "fieldInfo":  [
+.println                      {
+.println                          "fieldName":  "Beschreibung",
+.println                          "translations":  {
+.println                                               "de":  "Beschreibung",
+.println                                               "en":  "Description"
+.println                                           }
+.println                      },
+.println                      {
+.println                          "fieldName":  "Beschreibung 2",
+.println                          "translations":  {
+.println                                               "de":  "weitere Bezeichnung",
+.println                                               "en":  "further Description"
+.println                                           }
+.println                      },
+.println                      {
+.println                          "fieldName":  "Artikelnummer",
+.println                          "translations":  {
+.println                                               "de":  "Ersatzteilnummer",
+.println                                               "en":  "Item Number"
+.println                                           }
+.println                      }
+.println                  ],
+.println	"additionalObjectData":  [
+..
+.hol maske zeile
+..
+.IF _mehr
+!L0
+.println                                 {
+.println                                     "id":  "M|yart",
+.println                                     "fields":  {
+.println                                                    "Beschreibung":  {
+.println                                                                         "de":  "M|elex",
+.println                                                                         "en":  "M|yname2"
+.println                                                                     },
+.println                                                    "Beschreibung 2":  {
+.println                                                                           "de":  "M|elname"
+.println                                                                       },
+.println                                                    "Ersatzteil":  "WAHR"
+.println                                                }
+.println                                 },
+
+.hol maske zeile
+.IF _mehr
+.dazu
+.println     ,
+.weiter L0
+.ENDIF
+.ENDIF
+.println                      ]
+.println }
+..
+..
+.output new WERF.WEG
+..
+.system 'F|expr("sed -i " + G|apostroph + "1s/^/\xef\xbb\xbf/" + G|apostroph + " " + U|xtFile)' background
+.system 'F|expr("crlf+ " + U|xtFile)' background
+.system 'F|expr("cp " + U|xtFile + " " + G|dblquote + U|xtPath + U|xtFileName + G|dblquote)' background
+.continue ERR02         ? _G|mehr
+..
+.text U|xtNote 'G|bspri' Export abgeschlossen, Datei: {1}{2}
+.box
+'F|formatstr(U|xtNote, U|xtPath, U|xtFileName)'
+..
+!END
+.continue
+..
+!HINW1
+.box
+Diese Funktion ist noch nicht freigegeben !!!
+.continue END
+..
+!ERR01
+.text U|xtNote 'G|bspri' Diese Funktion ist nur im Modus {1}Zeigen{1} verfügbar.
+.box
+'F|formatstr(U|xtNote, G|dblquote)'
+.continue END
+..
+!ERR02
+.text U|xtNote 'G|bspri' Export nicht möglich, bitte wenden Sie sich an Ihren Administrator.
+.box
+'F|formatstr(U|xtNote, G|dblquote)'
+.continue END
