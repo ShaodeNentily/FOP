@@ -103,7 +103,7 @@
 .println                                                                       },
 .println                                                    "Ersatzteil":  "WAHR"
 .println                                                }
-.println                                 },
+.println                                 }
 
 .hol maske zeile
 .IF _mehr
@@ -146,3 +146,4 @@ Diese Funktion ist noch nicht freigegeben !!!
 .box
 'F|formatstr(U|xtNote, G|dblquote)'
 .continue END
+
